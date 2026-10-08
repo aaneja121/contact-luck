@@ -22,7 +22,7 @@
 	freeze-preflight $(addprefix freeze-preflight,-$(FREEZE_STAGES)) \
 	freeze-pitcher-replication question-f-2024 \
 	seal-pitcher-replication-execution check-pitcher-replication-readiness \
-	run-pitcher-replication-2025
+	run-pitcher-replication-2025 run-projection-development
 
 VENV := .venv
 PY := $(VENV)/bin/python
@@ -34,13 +34,13 @@ setup:
 	$(PIP) install -e ".[dev]"
 
 format:
-	$(PY) -m ruff format src tests forecast
+	$(PY) -m ruff format src tests forecast projection
 
 lint:
-	$(PY) -m ruff check src tests forecast
+	$(PY) -m ruff check src tests forecast projection
 
 typecheck:
-	$(PY) -m mypy src forecast
+	$(PY) -m mypy src forecast projection
 
 test:
 	$(PY) -m pytest
@@ -650,3 +650,8 @@ check-pitcher-replication-readiness:
 # empty. Do not run this without the maintainer asking for it in that moment.
 run-pitcher-replication-2025:
 	$(PY) replication/run_pitcher_replication_2025.py
+
+# 2027 projection development stage (projection/). Runs ONCE; refuses a dirty
+# tree or an existing output. See docs/plans/2027_projection_model_plan.md.
+run-projection-development:
+	$(PY) -m projection.run_development

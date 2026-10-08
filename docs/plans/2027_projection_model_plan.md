@@ -122,7 +122,7 @@ separately, after the 2027 result, not a side effect of building the model.
 3. ~~Decide ordering against the v1.2 park/weather plan~~ — resolved 2026-10-02 (decision 3).
 4. Write and freeze the projection specification (targets, ladder, adoption rule, 2027
    test). Commit. **Done — approved and frozen 2026-10-08 (decision 6).**
-5. Develop on 2022→2023 / 2023→2024 only. Freeze.
+5. Develop on 2022→2023 / 2023→2024 only. Freeze. **Code built 2026-10-08 (`projection/`, synthetic tests); clarifications C1–C8 await approval; not yet run.**
 6. Score 2026 once as input. Hash the 2027 projections before Opening Day 2027.
 7. Resolve after the 2027 regular season.
 
@@ -231,3 +231,37 @@ projections file stays in the gitignored namespace. **Resolved (decision 6):** a
 off-machine copy is kept in the existing R2 archive bucket, because grading is impossible
 if the only copy is lost. The upload is an outward action and happens only when the
 maintainer asks for it in that moment; the committed SHA-256 is what binds the grade.
+
+## Implementation clarifications (C1–C8) — proposed 2026-10-08, awaiting approval
+
+Written with the development code (`projection/`), **before any development metric was
+computed**. S1–S8 leave these mechanical details open; each is fixed here so nothing is
+chosen after a result exists. The development stage (`make run-projection-development`)
+does not run until the maintainer approves them.
+
+- **C1 — Challenger features.** `CHALLENGER_NOMINAL_FEATURES` = Model D's list minus its
+  three within-season `recent_*` features, computed over the whole input season with
+  `forecast.features._hitter_season_features` unchanged. `forecast.ridge`'s prespecified
+  drops (surprise, popup rate) still apply. The resolved-BBE count is retained: at season
+  level it varies by hitter, unlike in a fixed-cutoff window.
+- **C2 — Training and evaluation rows.** The graded hitters of each pair (S1: ≥ 1 resolved
+  input-season BBE and ≥ 100 resolved target-season BBE).
+- **C3 — Penalty selection.** `GroupKFold` by batter, 5 folds, no shuffle, over
+  `forecast.ridge.ALPHA_GRID` (25 log-spaced values, 1e-2 to 1e4), selected on MAE; then
+  refit on every complete-case row of 2022→2023 at the selected penalty.
+- **C4 — Incomplete features.** A hitter missing any challenger feature is excluded from
+  training. At prediction time he receives the shrunk-deserved value as his challenger
+  projection, so the paired comparison covers every graded hitter. Both counts are
+  reported. (In 2022–2024 no hitter has an all-null contact column; the rule matters
+  mainly for 2026.)
+- **C5 — S6 bootstrap.** The same convention as S7: 500 replicates, seed 42, 95% percentile
+  interval, batter clusters, via `forecast.bootstrap.run_paired_bootstrap` unchanged.
+- **C6 — Shrinkage details.** `forecast.baselines.fit_shrinkage` unchanged, including its
+  default 50-BBE minimum for the between-hitter variance. League mean = the input
+  season's realized μ.
+- **C7 — If the challenger is adopted,** the 2027 projection uses the frozen 2022→2023 fit
+  exactly as evaluated, applied to 2026 inputs. Refitting on both pairs would ship a
+  model the adoption rule never evaluated.
+- **C8 — One look.** The runner refuses a dirty tree or an existing results file and
+  records the commit, this file's SHA-256 and the three ledgers' SHA-256. A rerun needs a
+  recorded defect fix.

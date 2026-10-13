@@ -122,7 +122,7 @@ separately, after the 2027 result, not a side effect of building the model.
 3. ~~Decide ordering against the v1.2 park/weather plan~~ — resolved 2026-10-02 (decision 3).
 4. Write and freeze the projection specification (targets, ladder, adoption rule, 2027
    test). Commit. **Done — approved and frozen 2026-10-08 (decision 6).**
-5. Develop on 2022→2023 / 2023→2024 only. Freeze. **Code built 2026-10-08 (`projection/`, synthetic tests); clarifications C1–C8 await approval; not yet run.**
+5. Develop on 2022→2023 / 2023→2024 only. Freeze. **Code built 2026-10-08 (`projection/`, synthetic tests); clarifications C1–C8 approved 2026-10-13; development stage run once after that approval commit.**
 6. Score 2026 once as input. Hash the 2027 projections before Opening Day 2027.
 7. Resolve after the 2027 regular season.
 
@@ -232,12 +232,13 @@ off-machine copy is kept in the existing R2 archive bucket, because grading is i
 if the only copy is lost. The upload is an outward action and happens only when the
 maintainer asks for it in that moment; the committed SHA-256 is what binds the grade.
 
-## Implementation clarifications (C1–C8) — proposed 2026-10-08, awaiting approval
+## Implementation clarifications (C1–C8) — APPROVED 2026-10-13 as written
 
 Written with the development code (`projection/`), **before any development metric was
 computed**. S1–S8 leave these mechanical details open; each is fixed here so nothing is
 chosen after a result exists. The development stage (`make run-projection-development`)
-does not run until the maintainer approves them.
+does not run until the maintainer approves them. **Approved by the maintainer on
+2026-10-13, unchanged, before the development stage ran.**
 
 - **C1 — Challenger features.** `CHALLENGER_NOMINAL_FEATURES` = Model D's list minus its
   three within-season `recent_*` features, computed over the whole input season with

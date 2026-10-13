@@ -123,7 +123,7 @@ separately, after the 2027 result, not a side effect of building the model.
 4. Write and freeze the projection specification (targets, ladder, adoption rule, 2027
    test). Commit. **Done — approved and frozen 2026-10-08 (decision 6).**
 5. Develop on 2022→2023 / 2023→2024 only. Freeze. **Code built 2026-10-08 (`projection/`, synthetic tests); C1–C8 approved 2026-10-13; development stage RUN 2026-10-13 at 138e7e3 — challenger not adopted; shrunk deserved ships (see "Development result").**
-6. Score 2026 once as input. Hash the 2027 projections before Opening Day 2027. **Code built 2026-10-13 (`projection/run_2026_scoring.py`, synthetic tests); C9–C13 approved 2026-10-13; scoring run once after that approval commit.**
+6. Score 2026 once as input. Hash the 2027 projections before Opening Day 2027. **Code built 2026-10-13 (`projection/run_2026_scoring.py`, synthetic tests); C9–C13 approved 2026-10-13; 2026 scored once at 17222db. Projections FROZEN — hashes below ("2027 projections — frozen").**
 7. Resolve after the 2027 regular season.
 
 ## Decision record
@@ -335,3 +335,32 @@ the 2026 scoring ran.**
   before 2027-03-24. The projection values are not inspected for tuning; only counts,
   shrinkage parameters and hashes are recorded. The R2 copy (S8) happens only when the
   maintainer asks.
+
+## 2027 projections — frozen 2026-10-13
+
+`make run-projection-2026-scoring` ran once at commit `17222db` (C9–C13 approved, clean
+tree), 2026-10-13T18:53:45Z. Files are in the gitignored
+`outputs/projection_2027/projections/`. **These hashes bind the A3 grade. Any change to the
+projections or to S1–S8 after this commit voids A3.**
+
+| File | SHA-256 |
+|---|---|
+| `projections_2027.csv` | `5cd8cf488c67e7994740c365773a0d15867a13aa1f17f99e9baf5bb0b3ae50b0` |
+| `projections_2027_manifest.json` | `dc613249b239376a2d314b3a70aed5db24764f1f0c9719f9e9146e43f63797bb` |
+
+Recorded inside the manifest: development result SHA-256 `cd77783d…` (run at `138e7e3`);
+this plan's SHA-256 at run time `f1e4ef98…`; snapshot `2026-09-27` (integrity-verified,
+generated at `bf50cd2`).
+
+- **Projected hitters:** 658 (S1). By 2026 resolved BBE: 405 had ≥ 100, 89 had 50–99, 164 had < 50.
+- **Input events:** 124,610 batted balls; 123,161 resolved, 1,449 unresolved and left out of the
+  denominator. Adapter audit: no full-telescoping column reused, no model retrained, no
+  production code modified.
+- **2026 shrinkage (S4a):** deserved μ = 4.129 per 100, reliability 0.59 at 100 BBE;
+  realized μ = 4.121, reliability 0.34 at 100 BBE (494 hitter-seasons with ≥ 50 BBE). These are
+  close to the 2022 and 2023 development fits (deserved 0.61, realized 0.37–0.39).
+- `projection_2027` = shrunk deserved persistence. Individual projection values were not
+  inspected (C13).
+
+Remaining: the off-machine R2 copy (S8, only on the maintainer's request); after the 2027
+regular season and the v1.3 comparison, step 7 builds the A3 grader.

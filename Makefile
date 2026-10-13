@@ -22,7 +22,7 @@
 	freeze-preflight $(addprefix freeze-preflight,-$(FREEZE_STAGES)) \
 	freeze-pitcher-replication question-f-2024 \
 	seal-pitcher-replication-execution check-pitcher-replication-readiness \
-	run-pitcher-replication-2025 run-projection-development
+	run-pitcher-replication-2025 run-projection-development run-projection-2026-scoring
 
 VENV := .venv
 PY := $(VENV)/bin/python
@@ -655,3 +655,8 @@ run-pitcher-replication-2025:
 # tree or an existing output. See docs/plans/2027_projection_model_plan.md.
 run-projection-development:
 	$(PY) -m projection.run_development
+
+# 2027 projection: score 2026 ONCE as input (step 6). Refuses a dirty tree, an
+# existing output, or a snapshot not through 2026-09-27. Offline.
+run-projection-2026-scoring:
+	$(PY) -m projection.run_2026_scoring

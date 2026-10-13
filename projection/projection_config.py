@@ -9,7 +9,7 @@ The specification is `docs/plans/2027_projection_model_plan.md` (S1-S8, frozen
 |---|---|
 | 2022->2023, 2023->2024 | The two development pairs. The only seasons this stage reads. |
 | 2025 | SEALED. Never read, under any flag. |
-| 2026 | Projection INPUT. Scored once by a separate entry point (not yet written); unreachable from development code. |
+| 2026 | Projection INPUT. Scored once by `projection.run_2026_scoring`; unreachable from development code. |
 | 2027 | Prospective TEST. Read once, after the season, by the A3 grader only (not yet written). |
 
 ## Why this lives outside `src/` and `prospective/`
@@ -102,6 +102,17 @@ DEVELOPMENT_LEDGER_DIR = PROJECT_ROOT / "data" / "forecast"
 PROJECTION_OUTPUTS_DIR = PROJECT_ROOT / "outputs" / "projection_2027"
 DEVELOPMENT_OUTPUT_DIR = PROJECTION_OUTPUTS_DIR / "development"
 SPEC_PATH = PROJECT_ROOT / "docs" / "plans" / "2027_projection_model_plan.md"
+DEVELOPMENT_RESULTS_PATH = DEVELOPMENT_OUTPUT_DIR / "development_results.json"
+PROJECTIONS_OUTPUT_DIR = PROJECTION_OUTPUTS_DIR / "projections"
+
+# --------------------------------------------------------------------------
+# The 2026 input (S2, S8)
+# --------------------------------------------------------------------------
+
+#: S2: the archived v1.1 snapshot through the last 2026 regular-season day,
+#: pinned by label and verified against its own integrity hashes.
+PROJECTION_INPUT_SNAPSHOT_LABEL = "2026-09-27"
+PROJECTION_INPUT_DATA_THROUGH = "2026-09-27"
 
 
 def development_ledger_path(season: int) -> Path:
@@ -157,3 +168,17 @@ def assert_path_outside_forbidden_namespaces(path: Path) -> None:
                 f"{resolved} resolves inside the forbidden namespace {root}; projection "
                 "development reads development ledgers only."
             )
+
+
+def assert_projection_input_season(seasons: list[int] | tuple[int, ...]) -> None:
+    """Allow the projection input season, 2026, and nothing else.
+
+    Used only by the 2026 scoring entry point. Development code keeps
+    `assert_projection_development_seasons`, which refuses 2026.
+    """
+    years = {int(s) for s in seasons}
+    if years != {PROJECTION_INPUT_SEASON}:
+        raise ProjectionSeasonError(
+            f"The 2027 projection is scored from {PROJECTION_INPUT_SEASON} inputs only; "
+            f"got season(s) {sorted(years)}."
+        )

@@ -123,7 +123,7 @@ separately, after the 2027 result, not a side effect of building the model.
 4. Write and freeze the projection specification (targets, ladder, adoption rule, 2027
    test). Commit. **Done — approved and frozen 2026-10-08 (decision 6).**
 5. Develop on 2022→2023 / 2023→2024 only. Freeze. **Code built 2026-10-08 (`projection/`, synthetic tests); C1–C8 approved 2026-10-13; development stage RUN 2026-10-13 at 138e7e3 — challenger not adopted; shrunk deserved ships (see "Development result").**
-6. Score 2026 once as input. Hash the 2027 projections before Opening Day 2027. **Code built 2026-10-13 (`projection/run_2026_scoring.py`, synthetic tests); clarifications C9–C13 await approval; not yet run.**
+6. Score 2026 once as input. Hash the 2027 projections before Opening Day 2027. **Code built 2026-10-13 (`projection/run_2026_scoring.py`, synthetic tests); C9–C13 approved 2026-10-13; scoring run once after that approval commit.**
 7. Resolve after the 2027 regular season.
 
 ## Decision record
@@ -305,11 +305,12 @@ ladder and adoption rule were designed.
 Next: step 6, the 2026 scoring entry point (shrunk deserved, S4a shrinkage on 2026 inputs),
 then hash the projections before 2027-03-24.
 
-## Step 6 clarifications (C9–C13) — proposed 2026-10-13, awaiting approval
+## Step 6 clarifications (C9–C13) — APPROVED 2026-10-13 as written
 
 Written with the 2026 scoring code (`projection/run_2026_scoring.py`), **before any 2026
 input was read by projection code**. `make run-projection-2026-scoring` does not run until
-the maintainer approves them.
+the maintainer approves them. **Approved by the maintainer on 2026-10-13, unchanged, before
+the 2026 scoring ran.**
 
 - **C9 — The pinned input.** Snapshot label `2026-09-27` (data through the last 2026
   regular-season day), named explicitly rather than "newest", and verified against its own

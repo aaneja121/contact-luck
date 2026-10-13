@@ -122,7 +122,7 @@ separately, after the 2027 result, not a side effect of building the model.
 3. ~~Decide ordering against the v1.2 park/weather plan~~ — resolved 2026-10-02 (decision 3).
 4. Write and freeze the projection specification (targets, ladder, adoption rule, 2027
    test). Commit. **Done — approved and frozen 2026-10-08 (decision 6).**
-5. Develop on 2022→2023 / 2023→2024 only. Freeze. **Code built 2026-10-08 (`projection/`, synthetic tests); clarifications C1–C8 approved 2026-10-13; development stage run once after that approval commit.**
+5. Develop on 2022→2023 / 2023→2024 only. Freeze. **Code built 2026-10-08 (`projection/`, synthetic tests); C1–C8 approved 2026-10-13; development stage RUN 2026-10-13 at 138e7e3 — challenger not adopted; shrunk deserved ships (see "Development result").**
 6. Score 2026 once as input. Hash the 2027 projections before Opening Day 2027.
 7. Resolve after the 2027 regular season.
 
@@ -266,3 +266,41 @@ does not run until the maintainer approves them. **Approved by the maintainer on
 - **C8 — One look.** The runner refuses a dirty tree or an existing results file and
   records the commit, this file's SHA-256 and the three ledgers' SHA-256. A rerun needs a
   recorded defect fix.
+
+## Development result — run once 2026-10-13
+
+`make run-projection-development` at commit `138e7e3` (C1–C8 approved, clean tree);
+output `outputs/projection_2027/development/development_results.json` (gitignored), which
+records the ledger SHA-256s and this file's SHA-256 at run time
+(`95d05e54…`). Units: contact-stage run value per 100 resolved BBE.
+
+**S6 decision: challenger NOT adopted. The 2027 projection is shrunk deserved persistence.**
+On 2023→2024 (n = 370 graded hitters, 370 batter clusters), ΔMAE (challenger − shrunk
+deserved) = −0.049, 95% CI [−0.223, +0.104] (500 reps, seed 42). The interval crosses zero,
+so the rule is not met. ΔRMSE −0.045 [−0.247, +0.130]. 29% of replicates favoured shrunk
+deserved. The point estimate favours the challenger, but these data cannot tell the two apart.
+
+Challenger: ridge α = 100 (interior of the grid), fit on 363 complete 2022→2023 rows, 0
+excluded for incomplete features, 0 fallback rows in evaluation.
+
+Descriptive ladder (S6; no decision rests on these):
+
+| Pair | Predictor | n | MAE | RMSE | Pearson | Spearman |
+|---|---|---|---|---|---|---|
+| 2022→23 | league mean | 363 | 4.099 | 5.233 | — | — |
+| 2022→23 | shrunk realized | 363 | 3.539 | 4.536 | 0.490 | 0.467 |
+| 2022→23 | shrunk deserved | 363 | 3.461 | 4.413 | 0.522 | 0.510 |
+| 2023→24 | league mean | 370 | 3.870 | 4.821 | — | — |
+| 2023→24 | shrunk realized | 370 | 3.587 | 4.497 | 0.436 | 0.402 |
+| 2023→24 | shrunk deserved | 370 | 3.339 | 4.185 | 0.525 | 0.514 |
+| 2023→24 | challenger (Model D season) | 370 | 3.290 | 4.140 | 0.556 | 0.566 |
+
+Shrunk deserved beats shrunk realized on MAE in both pairs, but that comparison has no
+prespecified interval, so it is descriptive only. Reliability at 100 BBE: deserved ≈ 0.61 and
+realized ≈ 0.38–0.39 in both input seasons. Survivorship: 363 of 685 (2022) and 370 of 651
+(2023) projected hitters were graded, so results hold only for hitters who reached ≥ 100
+resolved target BBE. Disclosure: the 2026 Contact Forecast null result was known when the
+ladder and adoption rule were designed.
+
+Next: step 6, the 2026 scoring entry point (shrunk deserved, S4a shrinkage on 2026 inputs),
+then hash the projections before 2027-03-24.

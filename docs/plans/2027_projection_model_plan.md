@@ -362,5 +362,13 @@ generated at `bf50cd2`).
 - `projection_2027` = shrunk deserved persistence. Individual projection values were not
   inspected (C13).
 
-Remaining: the off-machine R2 copy (S8, only on the maintainer's request); after the 2027
-regular season and the v1.3 comparison, step 7 builds the A3 grader.
+**Off-machine copy (S8) — done 2026-10-20 at the maintainer's request.** `scripts/
+archive_projections.py` uploaded both files, write-once, to the existing archive bucket
+(`PROSPECTIVE_ARCHIVE_BUCKET`) under the separate prefix `projection-2027/`:
+`projection-2027/projections_2027.csv` (86,029 bytes) and
+`projection-2027/projections_2027_manifest.json` (7,245 bytes). An independent re-download
+of each re-hashed to the SHA-256 in the table above. The script pins those same hashes; a
+structural test checks they match this section.
+
+Remaining: after the 2027 regular season and the v1.3 comparison, step 7 builds the A3
+grader.

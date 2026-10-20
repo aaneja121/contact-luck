@@ -1,7 +1,8 @@
 # Plan: a 2027 season projection model
 
-Status: **PLAN — specification drafted, not frozen; nothing built.** Drafted 2026-09-29;
-decisions 3–5 and the draft specification added 2026-10-02. Research-only. No public
+Status: **SPECIFICATION FROZEN 2026-10-08 (S1–S8); nothing built.** Drafted 2026-09-29;
+decisions 3–5 and the draft specification added 2026-10-02; specification approved by the
+maintainer on 2026-10-08 (decision 6). Research-only. No public
 surface is implied (see "Product scope" below).
 
 ## The question
@@ -120,7 +121,7 @@ separately, after the 2027 result, not a side effect of building the model.
 2. ~~Inputs decided: single-season (2026 only); no 2025 authorization needed.~~
 3. ~~Decide ordering against the v1.2 park/weather plan~~ — resolved 2026-10-02 (decision 3).
 4. Write and freeze the projection specification (targets, ladder, adoption rule, 2027
-   test). Commit. **Drafted 2026-10-02 (S1–S8 below); awaiting maintainer approval.**
+   test). Commit. **Done — approved and frozen 2026-10-08 (decision 6).**
 5. Develop on 2022→2023 / 2023→2024 only. Freeze.
 6. Score 2026 once as input. Hash the 2027 projections before Opening Day 2027.
 7. Resolve after the 2027 regular season.
@@ -149,11 +150,20 @@ Decided on 2026-10-02:
    `RESEARCH_RULES.md`, "A second 2027 reader IS authorized". It reuses the v1.3 run's raw
    2027 file by hash, so grading happens after the v1.3 comparison has run.
 
-## Draft specification (S1–S8) — for approval, NOT frozen
+Decided on 2026-10-08:
 
-Nothing below has been computed. Each item is a proposal; the maintainer approves, edits
-or rejects it, and the approved text is then frozen in its own commit before any
-development metric exists.
+6. **Specification S1–S8 approved as written and frozen**, with both open sub-decisions
+   resolved as recommended: S4 uses option (a), shrinkage parameters estimated on the
+   input season (ruling recorded in `RESEARCH_RULES.md`, "Shrinkage parameters may be
+   estimated on 2026 inputs"); S8 keeps an off-machine copy of the projections file in the
+   existing R2 archive bucket. From this point S1–S8 may change only by a new, recorded
+   maintainer decision made before any development metric exists; after the projections
+   are hashed, any change voids A3.
+
+## Specification (S1–S8) — FROZEN 2026-10-08
+
+Approved by the maintainer on 2026-10-08 (decision 6) and frozen in its own commit before
+any development metric was computed. Nothing below had been computed at freeze time.
 
 **Where the code lives.** A new top-level `projection/` package, beside `forecast/`.
 The 2027 freeze forbids changing `src/` and `prospective/` after `d5303bc`; `projection/`
@@ -182,9 +192,11 @@ deserved (the primary benchmark)**; one challenger (S5).
 **S4 — Shrinkage.** One estimator for realized and deserved, the empirical-Bayes
 estimator in `forecast/baselines.py` (μ, σ², τ² by method of moments). At the season
 level, unlike Contact Forecast's fixed-size windows, `n_i` differs by hitter, so shrinkage
-*can* change rank; Spearman is reported for that reason. **Open sub-decision:** where μ,
-σ² and τ² are estimated.
-- (a) *Recommended:* on the input season itself (2026 for the 2027 projection), with the
+*can* change rank; Spearman is reported for that reason. **Resolved (decision 6): option
+(a).** μ, σ² and τ² are estimated by the frozen procedure on each pair's input season
+only: 2022 for 2022→2023, 2023 for 2023→2024, 2026 for the 2027 projection. The two
+options as drafted:
+- (a) *Chosen:* on the input season itself (2026 for the 2027 projection), with the
   procedure frozen. Only inputs are used, never the target season, so nothing is fitted
   to an outcome. But it does fit a statistic on 2026 data, which the 2026 rule ("scored,
   never tuned against") arguably covers, so it needs an explicit maintainer ruling.
@@ -215,6 +227,7 @@ league mean; RMSE, Pearson and Spearman; and the survivorship counts from S1.
 **S8 — Freeze mechanics.** Projections for every rung, for every projected batter, are
 computed once from the pinned 2026 snapshot. Their SHA-256 and the frozen specification's
 hash are committed before the first 2027 regular-season game (2027-03-24). The
-projections file stays in the gitignored namespace. **Open sub-decision:** keep an
-off-machine copy (for example the existing R2 archive bucket), because grading is
-impossible if the only copy is lost.
+projections file stays in the gitignored namespace. **Resolved (decision 6):** an
+off-machine copy is kept in the existing R2 archive bucket, because grading is impossible
+if the only copy is lost. The upload is an outward action and happens only when the
+maintainer asks for it in that moment; the committed SHA-256 is what binds the grade.

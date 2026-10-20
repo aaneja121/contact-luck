@@ -465,6 +465,21 @@ requires. The plan is `docs/plans/2027_projection_model_plan.md`.
   that namespace); publishing projections or grades (a separate product decision); and
   any other reader of 2027 data.
 
+### Shrinkage parameters may be estimated on 2026 inputs -- for the 2027 projection ONLY
+
+Approved by the maintainer on 2026-10-08 (projection plan decision 6, spec S4 option (a)).
+The 2027 projection's empirical-Bayes shrinkage (μ, σ², τ² by method of moments,
+`forecast/baselines.py`) is estimated on the input season: 2026 for the 2027 projection,
+exactly as 2022 and 2023 are for the two development pairs.
+
+- **Why this is not tuning against 2026.** The procedure is frozen before any development
+  metric exists, and it uses only 2026 *inputs* (realized and deserved contact-stage
+  rates from the pinned 2026-09-27 v1.1 snapshot). No 2026 result is compared with a
+  target, and nothing is chosen or adjusted because of how a 2026 number looks.
+- **Not authorized.** Choosing between estimators, priors, minimum samples or any other
+  setting by looking at 2026 values; refitting anything else on 2026; and any use of 2026
+  as validation for this model. Rule 5 of Version 1.1 still applies: 2026 is not pristine.
+
 ## Avoid target leakage
 
 Never use `events`, `outcome_class`, `description`, `estimated_ba_using_speedangle`,

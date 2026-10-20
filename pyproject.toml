@@ -64,7 +64,7 @@ select = ["E", "F", "W", "I", "UP", "B", "SIM"]
 ignore = ["E501"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["mlb_luck_score", "forecast"]
+known-first-party = ["mlb_luck_score", "forecast", "projection"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

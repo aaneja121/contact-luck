@@ -122,8 +122,8 @@ separately, after the 2027 result, not a side effect of building the model.
 3. ~~Decide ordering against the v1.2 park/weather plan~~ — resolved 2026-10-02 (decision 3).
 4. Write and freeze the projection specification (targets, ladder, adoption rule, 2027
    test). Commit. **Done — approved and frozen 2026-10-08 (decision 6).**
-5. Develop on 2022→2023 / 2023→2024 only. Freeze.
-6. Score 2026 once as input. Hash the 2027 projections before Opening Day 2027.
+5. Develop on 2022→2023 / 2023→2024 only. Freeze. **Code built 2026-10-08 (`projection/`, synthetic tests); C1–C8 approved 2026-10-13; development stage RUN 2026-10-13 at 138e7e3 — challenger not adopted; shrunk deserved ships (see "Development result").**
+6. Score 2026 once as input. Hash the 2027 projections before Opening Day 2027. **Code built 2026-10-13 (`projection/run_2026_scoring.py`, synthetic tests); C9–C13 approved 2026-10-13; 2026 scored once at 17222db. Projections FROZEN — hashes below ("2027 projections — frozen").**
 7. Resolve after the 2027 regular season.
 
 ## Decision record
@@ -231,3 +231,144 @@ projections file stays in the gitignored namespace. **Resolved (decision 6):** a
 off-machine copy is kept in the existing R2 archive bucket, because grading is impossible
 if the only copy is lost. The upload is an outward action and happens only when the
 maintainer asks for it in that moment; the committed SHA-256 is what binds the grade.
+
+## Implementation clarifications (C1–C8) — APPROVED 2026-10-13 as written
+
+Written with the development code (`projection/`), **before any development metric was
+computed**. S1–S8 leave these mechanical details open; each is fixed here so nothing is
+chosen after a result exists. The development stage (`make run-projection-development`)
+does not run until the maintainer approves them. **Approved by the maintainer on
+2026-10-13, unchanged, before the development stage ran.**
+
+- **C1 — Challenger features.** `CHALLENGER_NOMINAL_FEATURES` = Model D's list minus its
+  three within-season `recent_*` features, computed over the whole input season with
+  `forecast.features._hitter_season_features` unchanged. `forecast.ridge`'s prespecified
+  drops (surprise, popup rate) still apply. The resolved-BBE count is retained: at season
+  level it varies by hitter, unlike in a fixed-cutoff window.
+- **C2 — Training and evaluation rows.** The graded hitters of each pair (S1: ≥ 1 resolved
+  input-season BBE and ≥ 100 resolved target-season BBE).
+- **C3 — Penalty selection.** `GroupKFold` by batter, 5 folds, no shuffle, over
+  `forecast.ridge.ALPHA_GRID` (25 log-spaced values, 1e-2 to 1e4), selected on MAE; then
+  refit on every complete-case row of 2022→2023 at the selected penalty.
+- **C4 — Incomplete features.** A hitter missing any challenger feature is excluded from
+  training. At prediction time he receives the shrunk-deserved value as his challenger
+  projection, so the paired comparison covers every graded hitter. Both counts are
+  reported. (In 2022–2024 no hitter has an all-null contact column; the rule matters
+  mainly for 2026.)
+- **C5 — S6 bootstrap.** The same convention as S7: 500 replicates, seed 42, 95% percentile
+  interval, batter clusters, via `forecast.bootstrap.run_paired_bootstrap` unchanged.
+- **C6 — Shrinkage details.** `forecast.baselines.fit_shrinkage` unchanged, including its
+  default 50-BBE minimum for the between-hitter variance. League mean = the input
+  season's realized μ.
+- **C7 — If the challenger is adopted,** the 2027 projection uses the frozen 2022→2023 fit
+  exactly as evaluated, applied to 2026 inputs. Refitting on both pairs would ship a
+  model the adoption rule never evaluated.
+- **C8 — One look.** The runner refuses a dirty tree or an existing results file and
+  records the commit, this file's SHA-256 and the three ledgers' SHA-256. A rerun needs a
+  recorded defect fix.
+
+## Development result — run once 2026-10-13
+
+`make run-projection-development` at commit `138e7e3` (C1–C8 approved, clean tree);
+output `outputs/projection_2027/development/development_results.json` (gitignored), which
+records the ledger SHA-256s and this file's SHA-256 at run time
+(`95d05e54…`). Units: contact-stage run value per 100 resolved BBE.
+
+**S6 decision: challenger NOT adopted. The 2027 projection is shrunk deserved persistence.**
+On 2023→2024 (n = 370 graded hitters, 370 batter clusters), ΔMAE (challenger − shrunk
+deserved) = −0.049, 95% CI [−0.223, +0.104] (500 reps, seed 42). The interval crosses zero,
+so the rule is not met. ΔRMSE −0.045 [−0.247, +0.130]. 29% of replicates favoured shrunk
+deserved. The point estimate favours the challenger, but these data cannot tell the two apart.
+
+Challenger: ridge α = 100 (interior of the grid), fit on 363 complete 2022→2023 rows, 0
+excluded for incomplete features, 0 fallback rows in evaluation.
+
+Descriptive ladder (S6; no decision rests on these):
+
+| Pair | Predictor | n | MAE | RMSE | Pearson | Spearman |
+|---|---|---|---|---|---|---|
+| 2022→23 | league mean | 363 | 4.099 | 5.233 | — | — |
+| 2022→23 | shrunk realized | 363 | 3.539 | 4.536 | 0.490 | 0.467 |
+| 2022→23 | shrunk deserved | 363 | 3.461 | 4.413 | 0.522 | 0.510 |
+| 2023→24 | league mean | 370 | 3.870 | 4.821 | — | — |
+| 2023→24 | shrunk realized | 370 | 3.587 | 4.497 | 0.436 | 0.402 |
+| 2023→24 | shrunk deserved | 370 | 3.339 | 4.185 | 0.525 | 0.514 |
+| 2023→24 | challenger (Model D season) | 370 | 3.290 | 4.140 | 0.556 | 0.566 |
+
+Shrunk deserved beats shrunk realized on MAE in both pairs, but that comparison has no
+prespecified interval, so it is descriptive only. Reliability at 100 BBE: deserved ≈ 0.61 and
+realized ≈ 0.38–0.39 in both input seasons. Survivorship: 363 of 685 (2022) and 370 of 651
+(2023) projected hitters were graded, so results hold only for hitters who reached ≥ 100
+resolved target BBE. Disclosure: the 2026 Contact Forecast null result was known when the
+ladder and adoption rule were designed.
+
+Next: step 6, the 2026 scoring entry point (shrunk deserved, S4a shrinkage on 2026 inputs),
+then hash the projections before 2027-03-24.
+
+## Step 6 clarifications (C9–C13) — APPROVED 2026-10-13 as written
+
+Written with the 2026 scoring code (`projection/run_2026_scoring.py`), **before any 2026
+input was read by projection code**. `make run-projection-2026-scoring` does not run until
+the maintainer approves them. **Approved by the maintainer on 2026-10-13, unchanged, before
+the 2026 scoring ran.**
+
+- **C9 — The pinned input.** Snapshot label `2026-09-27` (data through the last 2026
+  regular-season day), named explicitly rather than "newest", and verified against its own
+  `integrity_hashes.json` by `forecast.phase2.snapshot.resolve_snapshot`. It is read through
+  `load_contact_stage_ledger` unchanged: the same snapshot and adapter the Contact
+  Forecast resolution pass used. The runner refuses any other data-through date.
+- **C10 — What is written.** One CSV row per projected batter (S1: ≥ 1 resolved 2026 BBE),
+  sorted by batter: `n_resolved_bbe_2026`, the raw realized and deserved 2026 rates, every
+  ladder rung (league mean, shrunk realized, shrunk deserved), and `projection_2027` = the
+  rung chosen by S6 (shrunk deserved). CSV, not parquet, so the hashed bytes do not depend on
+  a parquet library version. The challenger is not computed (not adopted; C7 does not apply).
+- **C11 — Where the chosen rung comes from.** The runner reads the development result
+  (`outputs/projection_2027/development/development_results.json`) and refuses to run if it
+  adopted the challenger, rather than improvising the C7 path. It records that file's SHA-256.
+- **C12 — Manifest.** `projections_2027_manifest.json` beside the CSV records the CSV's
+  SHA-256, the 2026 shrinkage fits, the snapshot record (label, data-through date, verified
+  integrity hashes), the contact-stage audit, the commit, and this file's SHA-256. Counts by
+  2026 BBE (< 50, 50–99, ≥ 100) are reported; nobody is excluded for a small sample, since
+  shrinkage handles that (S1, S4).
+- **C13 — One look, then freeze.** The runner refuses a dirty tree or existing output. After
+  it runs, the CSV and manifest SHA-256 are written into this plan in their own commit,
+  before 2027-03-24. The projection values are not inspected for tuning; only counts,
+  shrinkage parameters and hashes are recorded. The R2 copy (S8) happens only when the
+  maintainer asks.
+
+## 2027 projections — frozen 2026-10-13
+
+`make run-projection-2026-scoring` ran once at commit `17222db` (C9–C13 approved, clean
+tree), 2026-10-13T18:53:45Z. Files are in the gitignored
+`outputs/projection_2027/projections/`. **These hashes bind the A3 grade. Any change to the
+projections or to S1–S8 after this commit voids A3.**
+
+| File | SHA-256 |
+|---|---|
+| `projections_2027.csv` | `5cd8cf488c67e7994740c365773a0d15867a13aa1f17f99e9baf5bb0b3ae50b0` |
+| `projections_2027_manifest.json` | `dc613249b239376a2d314b3a70aed5db24764f1f0c9719f9e9146e43f63797bb` |
+
+Recorded inside the manifest: development result SHA-256 `cd77783d…` (run at `138e7e3`);
+this plan's SHA-256 at run time `f1e4ef98…`; snapshot `2026-09-27` (integrity-verified,
+generated at `bf50cd2`).
+
+- **Projected hitters:** 658 (S1). By 2026 resolved BBE: 405 had ≥ 100, 89 had 50–99, 164 had < 50.
+- **Input events:** 124,610 batted balls; 123,161 resolved, 1,449 unresolved and left out of the
+  denominator. Adapter audit: no full-telescoping column reused, no model retrained, no
+  production code modified.
+- **2026 shrinkage (S4a):** deserved μ = 4.129 per 100, reliability 0.59 at 100 BBE;
+  realized μ = 4.121, reliability 0.34 at 100 BBE (494 hitter-seasons with ≥ 50 BBE). These are
+  close to the 2022 and 2023 development fits (deserved 0.61, realized 0.37–0.39).
+- `projection_2027` = shrunk deserved persistence. Individual projection values were not
+  inspected (C13).
+
+**Off-machine copy (S8) — done 2026-10-20 at the maintainer's request.** `scripts/
+archive_projections.py` uploaded both files, write-once, to the existing archive bucket
+(`PROSPECTIVE_ARCHIVE_BUCKET`) under the separate prefix `projection-2027/`:
+`projection-2027/projections_2027.csv` (86,029 bytes) and
+`projection-2027/projections_2027_manifest.json` (7,245 bytes). An independent re-download
+of each re-hashed to the SHA-256 in the table above. The script pins those same hashes; a
+structural test checks they match this section.
+
+Remaining: after the 2027 regular season and the v1.3 comparison, step 7 builds the A3
+grader.

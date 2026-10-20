@@ -109,6 +109,11 @@ outputs/forecast_phase2_h200/
 # Contact Forecast end-of-season 2026 resolution pass namespace.
 outputs/forecast_phase2_resolution/
 
+# 2027 projection model (projection/): development results, and later the
+# frozen projections and the 2027 grade. Never committed; a run's own output
+# must never dirty the tree for the next guarded run.
+outputs/projection_2027/
+
 # Version 0.14 pitcher-replication namespace -- isolated from the
 # development caches, the sealed Version 1.0 namespace and the Version 1.1
 # prospective namespace (see replication/pitcher_replication_freeze.py).

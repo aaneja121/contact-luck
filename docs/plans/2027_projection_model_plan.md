@@ -124,7 +124,7 @@ separately, after the 2027 result, not a side effect of building the model.
    test). Commit. **Done — approved and frozen 2026-10-08 (decision 6).**
 5. Develop on 2022→2023 / 2023→2024 only. Freeze. **Code built 2026-10-08 (`projection/`, synthetic tests); C1–C8 approved 2026-10-13; development stage RUN 2026-10-13 at 138e7e3 — challenger not adopted; shrunk deserved ships (see "Development result").**
 6. Score 2026 once as input. Hash the 2027 projections before Opening Day 2027. **Code built 2026-10-13 (`projection/run_2026_scoring.py`, synthetic tests); C9–C13 approved 2026-10-13; 2026 scored once at 17222db. Projections FROZEN — hashes below ("2027 projections — frozen").**
-7. Resolve after the 2027 regular season.
+7. Resolve after the 2027 regular season. **Grader code built 2026-10-20, before the season (decision 7): `projection/run_2027_grading.py`, synthetic tests only. C14–C20 AWAIT approval. It runs once, after the v1.3 comparison.**
 
 ## Decision record
 
@@ -370,5 +370,60 @@ archive_projections.py` uploaded both files, write-once, to the existing archive
 of each re-hashed to the SHA-256 in the table above. The script pins those same hashes; a
 structural test checks they match this section.
 
-Remaining: after the 2027 regular season and the v1.3 comparison, step 7 builds the A3
-grader.
+Remaining: step 7. The grader is built (below); it runs once, after the 2027 regular season
+and the v1.3 comparison.
+
+## Step 7: the A3 grader — built 2026-10-20, clarifications C14–C20 AWAIT approval
+
+**Decision 7 (maintainer, 2026-10-20): build the grader now, before the 2027 season.** The
+CBA expired after 2026, so the 2027 season may start late or be shortened. Writing the
+grader while no 2027 data exists means it is reviewed and frozen before any result could
+shape it. Building it reads nothing: the code and its tests use synthetic data only. Only
+the order changes; A3's guards are unchanged and the grader still runs once, after the
+v1.3 comparison.
+
+Written with the code (`projection/grade_2027.py`, `projection/run_2027_grading.py`),
+before any 2027 data exists. S1–S8 are unchanged; these fix only what S7 leaves open.
+`make run-projection-2027-grading` must not run until they are approved.
+
+- **C14 — Inputs, bound by hash.** The grader reads the frozen projections as written and
+  recomputes nothing. `projections_2027.csv` and its manifest must match the SHA-256 in the
+  table above; if either is missing it is restored from R2 (`projection-2027/`), never
+  regenerated. The raw 2027 file is the one the v1.3 run downloaded: the same path, and the
+  SHA-256 that v1.3 recorded in `comparison_2027.json` (`ingestion.statcast`). The grader
+  never downloads anything.
+- **C15 — The 2027 target needs no model.** 2027 is cleaned exactly as v1.3 cleans it
+  (`clean_development_data([2027], <v1.3 raw dir>)`). Resolved = `is_eligible` and a
+  non-null `outcome_class`, so field errors and fielder's choices leave the denominator.
+  Rc = `DEFAULT_RUN_VALUE_MAP[outcome_class]`, and the target is 100 × the hitter's mean Rc.
+  This is the development ledgers' realized rate (`forecast.score_development_seasons`). The
+  one visible difference: development selection also required finite deserved values, but
+  every resolved development row carries them (every eligible row is scored), and 2027 has
+  no deserved value to require. An outcome class with no frozen run value stops the run.
+- **C16 — Who is graded.** `projection.development.build_pair`, unchanged: projected =
+  every row of the frozen CSV; graded = those with ≥ 100 resolved 2027 BBE (S1). Hitters
+  who reach 100 with no 2026 row are counted, not graded. `projection_2027` must equal the
+  rung the frozen manifest names (`shrunk_deserved_persistence`), or the run stops.
+- **C17 — The primary and its classification.** `forecast.bootstrap.run_paired_bootstrap`,
+  unchanged: reference = shrunk realized, challenger = `projection_2027`; 500 replicates,
+  seed 42, 95% percentile interval, batter clusters, one cell (`K0_H0`). Negative ΔMAE
+  favours the projection. The four-way rule is `forecast.phase2.run_phase2_evaluation.
+  classify_result`, on MAE only. Its key and condition are recorded; its "meaning" text,
+  written for the 2026 Contact Forecast test, is not copied.
+- **C18 — Secondary results, no decision.** The same paired bootstrap against league mean;
+  MAE, RMSE, Pearson and Spearman for each ladder rung (`forecast.metrics.evaluate_ladder`);
+  and the S1 survivorship counts. Reported together, with no metric privileged.
+- **C19 — One look.** The guards, in order, before any 2027 row is read: a clean tree; no
+  existing grade; output outside the sealed and prospective namespaces; the 2027 season end
+  recorded with its citation; the v1.3 comparison exists and recorded the same season end;
+  the season is complete (`v1_3_2027_config.check_season_complete`, re-run); projection
+  hashes; raw-file hash. Output: `outputs/projection_2027/grade/grade_2027.json`
+  (gitignored), write-once. It records the commit, this file's SHA-256, both projection
+  hashes, the raw file's hash and the v1.3 record's hash. A crash is fixed as a recorded
+  defect, never as a second look.
+- **C20 — No minimum-population rule.** v1.3 calls its result inconclusive below 60,000
+  batted balls; S7 has no such floor. A late or short season leaves fewer hitters at 100
+  BBE, which widens the interval, so the four-way rule already reports that as
+  "promising but inconclusive" or "no evidence". Adding a floor now would change S7 after
+  the projections were hashed, which voids A3. The grade reports `n_graded` beside the
+  classification.

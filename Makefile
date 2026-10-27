@@ -22,7 +22,8 @@
 	freeze-preflight $(addprefix freeze-preflight,-$(FREEZE_STAGES)) \
 	freeze-pitcher-replication question-f-2024 \
 	seal-pitcher-replication-execution check-pitcher-replication-readiness \
-	run-pitcher-replication-2025 run-projection-development run-projection-2026-scoring
+	run-pitcher-replication-2025 run-projection-development run-projection-2026-scoring \
+	run-projection-2027-grading
 
 VENV := .venv
 PY := $(VENV)/bin/python
@@ -660,3 +661,10 @@ run-projection-development:
 # existing output, or a snapshot not through 2026-09-27. Offline.
 run-projection-2026-scoring:
 	$(PY) -m projection.run_2026_scoring
+
+# 2027 projection: grade the frozen projections ONCE (step 7, A3). Runs only after
+# the 2027 season ends AND the v1.3 comparison has run: it reads the raw 2027 file
+# v1.3 downloaded (checked by SHA-256) and never downloads. Checks the schedule
+# with the MLB Stats API. Do not run until C14-C20 are approved.
+run-projection-2027-grading:
+	PYTHONPATH=prospective $(PY) -m projection.run_2027_grading

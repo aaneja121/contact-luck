@@ -124,7 +124,7 @@ separately, after the 2027 result, not a side effect of building the model.
    test). Commit. **Done — approved and frozen 2026-10-08 (decision 6).**
 5. Develop on 2022→2023 / 2023→2024 only. Freeze. **Code built 2026-10-08 (`projection/`, synthetic tests); C1–C8 approved 2026-10-13; development stage RUN 2026-10-13 at 138e7e3 — challenger not adopted; shrunk deserved ships (see "Development result").**
 6. Score 2026 once as input. Hash the 2027 projections before Opening Day 2027. **Code built 2026-10-13 (`projection/run_2026_scoring.py`, synthetic tests); C9–C13 approved 2026-10-13; 2026 scored once at 17222db. Projections FROZEN — hashes below ("2027 projections — frozen").**
-7. Resolve after the 2027 regular season. **Grader code built 2026-10-20, before the season (decision 7): `projection/run_2027_grading.py`, synthetic tests only. C14–C20 AWAIT approval. It runs once, after the v1.3 comparison.**
+7. Resolve after the 2027 regular season. **Grader code built 2026-10-20, before the season (decision 7): `projection/run_2027_grading.py`, synthetic tests only. C14–C20 approved 2026-10-27. It runs once, after the v1.3 comparison.**
 
 ## Decision record
 
@@ -373,7 +373,7 @@ structural test checks they match this section.
 Remaining: step 7. The grader is built (below); it runs once, after the 2027 regular season
 and the v1.3 comparison.
 
-## Step 7: the A3 grader — built 2026-10-20, clarifications C14–C20 AWAIT approval
+## Step 7: the A3 grader — built 2026-10-20, clarifications C14–C20 APPROVED 2026-10-27 as written
 
 **Decision 7 (maintainer, 2026-10-20): build the grader now, before the 2027 season.** The
 CBA expired after 2026, so the 2027 season may start late or be shortened. Writing the
@@ -384,7 +384,8 @@ v1.3 comparison.
 
 Written with the code (`projection/grade_2027.py`, `projection/run_2027_grading.py`),
 before any 2027 data exists. S1–S8 are unchanged; these fix only what S7 leaves open.
-`make run-projection-2027-grading` must not run until they are approved.
+`make run-projection-2027-grading` must not run until they are approved. **Approved by the
+maintainer on 2026-10-27, unchanged, before any 2027 data exists.**
 
 - **C14 — Inputs, bound by hash.** The grader reads the frozen projections as written and
   recomputes nothing. `projections_2027.csv` and its manifest must match the SHA-256 in the

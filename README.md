@@ -25,6 +25,9 @@ GitHub Actions cron (13:37 UTC daily)
   └─> scripts/publish_snapshot.sh          the only orchestration entry point
         ├─> scripts/ensure_frozen_inputs.py    fetch + hash-verify the frozen input
         │                                       bundle (gitignored; pulled from R2)
+        ├─> scripts/archive_snapshot.py --check-archived
+        │                                       date already archived? stop cleanly,
+        │                                       publish nothing   [before scoring]
         ├─> prospective/run_v1_1_2026_scoring.py
         │                                       score -> immutable snapshot
         │                                       (clean-tree, date-completeness,
@@ -94,6 +97,7 @@ Neither is a dependency of the scoring pipeline.
 | 2024 | Development validation / model selection |
 | 2025 | One-time sealed final evaluation |
 | 2026 | Prospective scoring |
+| 2027 | Pre-registered test season, read once after it ends (v1.3 comparison; 2027 projection grade) |
 
 Contact-model selection on the untouched 2024 validation season (n=122,132):
 
@@ -130,6 +134,31 @@ log loss and were still rejected, because their per-play attributions were weak,
 wrong-signed, or confounded. `baseline_v02` remains the production contact model. The full
 reasoning for each rejection is in [`docs/RESEARCH_LOG.md`](docs/RESEARCH_LOG.md).
 
+## Research beyond the published hitter metric
+
+None of these changes the live hitter score. Plans and results are in
+[`docs/plans/`](docs/plans/).
+
+- **Pitcher Contact Luck.** A one-time held-out 2025 replication, pre-registered and
+  hashed before 2025 was opened, was classified **REPLICATED** and sealed
+  ([decision record](docs/pitcher_replication_2025_decision_record.md)). The 2024 pitcher
+  pages are published; no other pitcher season is.
+- **Contact Forecast** (`forecast/`): does luck-adjusted contact predict a hitter's next
+  100 or 200 batted balls better than realized results? On development seasons, shrunk
+  deserved beat shrunk realized by 3.9% MAE (95% CI excludes zero, small). Resolved on
+  2026: no evidence the richer model beats shrunk deserved (n = 31 and 48). Research only.
+- **Version 1.2, park and weather in the contact model: closed, not adopted.** Wall
+  geometry gave a large log-loss gain only because Statcast's hit distance is where the
+  ball was caught or landed, so distance minus wall nearly encodes the outcome. Without
+  distance, geometry made the model worse.
+- **Version 1.3, an outcome-free contact model** (launch conditions plus air density, no
+  hit distance): frozen 2026-10-01 and pre-registered against v1.1 on 2027 batted balls,
+  run once after the season. Adoption would be a redefinition of the score.
+- **2027 hitter projections** (`projection/`): shrunk deserved persistence from 2026
+  (a richer challenger was not adopted in development). 658 hitters, frozen by SHA-256
+  before 2027 and copied to R2; graded once against 2027 by a dedicated, guarded entry
+  point. Not published.
+
 ## Quickstart
 
 ```bash
@@ -138,7 +167,7 @@ make check            # ruff format + ruff check + mypy + pytest
 make download-sample  # one week of 2024 Statcast data (network)
 ```
 
-`make check` runs 2,800+ tests, fully offline, and covers `src` and `tests`.
+`make check` runs 3,900+ tests, fully offline, and covers `src` and `tests`.
 
 ## Documentation
 
@@ -147,6 +176,7 @@ make download-sample  # one week of 2024 Statcast data (network)
 | [`docs/RESEARCH_LOG.md`](docs/RESEARCH_LOG.md) | Full development history v0.1 → v1.1, every rejected candidate, adoption reasoning |
 | [`docs/OPERATIONS.md`](docs/OPERATIONS.md) | Publish pipeline, frozen input bundle, R2 archival, history sync, credentials, recovery |
 | [`docs/DATA.md`](docs/DATA.md) | Eligible and excluded events, public-data limits, licensing, reproducibility |
+| [`docs/plans/`](docs/plans/) | Frozen specifications and results for v1.2, v1.3, the 2027 pre-registration and the 2027 projection |
 
 Also: [`ARCHITECTURE.md`](ARCHITECTURE.md) (module map and data flow),
 [`RESEARCH_RULES.md`](RESEARCH_RULES.md) (modeling and data-safety rules),

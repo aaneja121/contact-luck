@@ -1,8 +1,13 @@
 # Plan: Version 1.2 — park and weather in the contact model
 
-Status: **PLAN — nothing here is authorized or built.** Drafted 2026-09-29.
-Any adoption is a **redefinition of the score**, not a bug fix (`RESEARCH_RULES.md`,
-"Never silently redefine the Luck Score").
+Status: **CLOSED 2026-10-01 — neither candidate adopted; v1.1 is unchanged.** Drafted
+2026-09-29. `gated_geometry_v12` was not adopted after the plausibility finding (its
+distance-minus-wall margin nearly encodes the outcome); `airball_geometry_v12b` failed
+its frozen rule. The work continued as the v1.3 outcome-free contact model
+(`docs/plans/v1_3_outcome_free_contact_plan.md`), which took the park decision back to
+park-neutral for v1.3 (D11: Option B for park deferred, not reversed). Any adoption would
+have been a **redefinition of the score**, not a bug fix (`RESEARCH_RULES.md`, "Never
+silently redefine the Luck Score"). Kept as the record; nothing below is pending.
 
 ## Where things stand today (verified 2026-09-29)
 
@@ -606,6 +611,9 @@ criteria.
 
 ## Freeze and prospective test
 
+**Not reached:** v1.2 closed without an adopted candidate, so none of this happened. The
+2027 test belongs to v1.3 (`docs/plans/v1_3_2027_preregistration.md`).
+
 1. Freeze the v1.2 code, features and adoption decision with a recorded date **before the
    first 2027 regular-season game** (date to be cited from the official schedule, not
    guessed).
@@ -618,16 +626,25 @@ criteria.
 
 ## Interaction with the 2027 projection plan
 
+**Resolved:** v1.2 was not adopted, so the projections use v1.0/v1.1 deserved values
+(projection plan decision 3).
+
 The projection model (`docs/plans/2027_projection_model_plan.md`) uses deserved values as
 inputs. If v1.2 is adopted, projections should use v1.2 values, so **v1.2's adoption
 decision comes first.** If v1.2 is not adopted, projections use v1.0/v1.1 values and
 nothing waits.
 
-## Open questions for the maintainer
+## Open questions for the maintainer — status at close (2026-10-27)
 
-1. Option A or Option B (and separately for weather)?
-2. Contact model only, or also revisit the defensive components' park handling?
-3. Is season-level cross-validation within 2021–2023 acceptable as the decision basis,
-   given 2024 is not pristine?
-4. Who does the human geometry spot-check, and when?
-5. Separately from this plan: fix the `PRODUCT.md` "venue" claim now?
+1. ~~Option A or Option B (and separately for weather)?~~ Option B for both, 2026-09-29
+   ("Decision record"). Park later deferred to park-neutral for v1.3 (D11).
+2. Contact model only, or also revisit the defensive components' park handling? **Never
+   decided;** moot with v1.2 closed. The near-wall defensive model is unchanged.
+3. ~~Season-level cross-validation within 2021–2023 as the decision basis?~~ Yes, [D1],
+   approved 2026-09-30.
+4. Who does the human geometry spot-check, and when? **Partly done.** The maintainer
+   approved distances and heights through the 2026-09-29 and 2026-10-01 reviews: of the
+   185 points in the final v1.2 table, 169 are `maintainer_approved_*` and 16 are still
+   `agent_sourced_pending_human_review` (counted 2026-10-27). Those 16 need review before
+   any future use of park geometry in the score.
+5. ~~Fix the `PRODUCT.md` "venue" claim?~~ Done 2026-10-02 (`6fc4a67`).

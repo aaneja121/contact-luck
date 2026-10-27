@@ -10,7 +10,7 @@ The specification is `docs/plans/2027_projection_model_plan.md` (S1-S8, frozen
 | 2022->2023, 2023->2024 | The two development pairs. The only seasons this stage reads. |
 | 2025 | SEALED. Never read, under any flag. |
 | 2026 | Projection INPUT. Scored once by `projection.run_2026_scoring`; unreachable from development code. |
-| 2027 | Prospective TEST. Read once, after the season, by the A3 grader only (not yet written). |
+| 2027 | Prospective TEST. Read once, after the season, by the A3 grader only (`projection.run_2027_grading`). |
 
 ## Why this lives outside `src/` and `prospective/`
 

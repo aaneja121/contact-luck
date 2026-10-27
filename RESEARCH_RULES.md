@@ -447,7 +447,7 @@ vs v1.1 comparison. Nothing below loosens any rule for 2025 or 2026.
 Approved by the maintainer on 2026-10-02 (decision A3), as the separate decision item 7
 requires. The plan is `docs/plans/2027_projection_model_plan.md`.
 
-- **Scope.** One dedicated entry point, under `projection/` (not yet written), may read
+- **Scope.** One dedicated entry point, `projection/run_2027_grading.py`, may read
   2027 regular-season data once, to grade the frozen 2027 projections against realized
   2027 contact-stage results. Nothing else.
 - **Same data as v1.3, not a second download.** It reads the raw 2027 file the v1.3 run

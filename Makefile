@@ -665,6 +665,6 @@ run-projection-2026-scoring:
 # 2027 projection: grade the frozen projections ONCE (step 7, A3). Runs only after
 # the 2027 season ends AND the v1.3 comparison has run: it reads the raw 2027 file
 # v1.3 downloaded (checked by SHA-256) and never downloads. Checks the schedule
-# with the MLB Stats API. Do not run until C14-C20 are approved.
+# with the MLB Stats API. C14-C20 approved 2026-10-27.
 run-projection-2027-grading:
 	PYTHONPATH=prospective $(PY) -m projection.run_2027_grading
